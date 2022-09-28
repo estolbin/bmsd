@@ -19,7 +19,6 @@ using namespace std;
 #include "plots.h"
 #include "help.h"
 
-
 unsigned char OWI_COMPUTECRC8(unsigned char inData, unsigned char seed) // CRC computing function
 {
     unsigned char bitsLeft;
@@ -89,11 +88,35 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdsho
     {
         return -1;
     }
+
+    // Register class for help window
+    SoftwareMainClass.lpfnWndProc    = HELPProc;
+    SoftwareMainClass.hIcon		  = NULL;
+    SoftwareMainClass.lpszMenuName  = NULL;
+    SoftwareMainClass.lpszClassName = L"help";
+    RegisterClass(&SoftwareMainClass);
+
+    // Register class for draw plot window
+    SoftwareMainClass.lpfnWndProc    = DrawProcedure;
+    SoftwareMainClass.hIcon		  = NULL;
+    SoftwareMainClass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH);
+    SoftwareMainClass.lpszMenuName  = NULL;
+    SoftwareMainClass.lpszClassName = L"graphics";
+    RegisterClass(&SoftwareMainClass);
+
+    // Register class for open plot window
+    SoftwareMainClass.lpfnWndProc    = GraphProcedure;
+    SoftwareMainClass.hIcon		  = NULL;
+    SoftwareMainClass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH);
+    SoftwareMainClass.lpszMenuName  = NULL;
+    SoftwareMainClass.lpszClassName = L"graphics";
+    RegisterClass(&SoftwareMainClass);
+
     MSG SoftwareMainMessage = { 0 };
 
     hwnd_0 = CreateWindow(L"Main", L"NavLab", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 100, 100, 500, 380, NULL, NULL, hInst, NULL);
 
-    ShowWindow(hwnd_0,ncmdshow);
+    ShowWindow(hwnd_0, ncmdshow);
     UpdateWindow(hwnd_0);
 
     while (GetMessage(&SoftwareMainMessage, NULL, 0, 0))
@@ -146,21 +169,6 @@ void SetOpenFileParams(HWND hwnd_0)
 }
 
 
-void SetOpenFileParams_gr(HWND gr)
-{
-    ZeroMemory(&ofn_gr, sizeof(ofn_gr));
-    ofn_gr.lStructSize = sizeof(ofn_gr);
-    ofn_gr.hwndOwner = gr;
-    ofn_gr.lpstrFile = filename_gr;
-    ofn_gr.nMaxFile = sizeof(filename_gr);
-    ofn_gr.lpstrFilter = NULL;
-    ofn_gr.lpstrFileTitle = NULL;
-    ofn_gr.nMaxFileTitle = 0;
-    ofn_gr.lpstrInitialDir = NULL;
-    ofn_gr.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-}
-
-
 LRESULT CALLBACK SoftwareMainProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg)
@@ -176,40 +184,12 @@ LRESULT CALLBACK SoftwareMainProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp
         }
         switch (wp)
         {
-
         case draw_plot:
-            GraphClass.style		  = CS_HREDRAW | CS_VREDRAW;
-            GraphClass.lpfnWndProc    = DrawProcedure;
-            GraphClass.hInstance	  = hInst;
-            GraphClass.hIcon		  = LoadIcon (NULL, IDI_APPLICATION);
-            GraphClass.hCursor	      = LoadCursor (NULL, IDC_ARROW);
-            GraphClass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH);
-            GraphClass.lpszMenuName  = NULL;
-            GraphClass.lpszClassName = L"graphics";
 
-            if (!RegisterClassW(&GraphClass))
-            {
-                return FALSE;
-            }
-
-            gr_draw = CreateWindow(L"graphics", L"DRAW", WS_VISIBLE | WS_BORDER | WS_MAXIMIZE | WS_HSCROLL | WS_VSCROLL | WS_OVERLAPPEDWINDOW, 0, 0, 800, 700, NULL, NULL, hInst, NULL);
+            gr_draw = CreateWindow(L"graphics", L"DRAW", WS_VISIBLE | WS_BORDER | WS_MAXIMIZE | WS_OVERLAPPEDWINDOW, 0, 0, 800, 700, NULL, NULL, hInst, NULL);
 
             break;
         case open_plot:
-            GraphClass.style		  = CS_HREDRAW | CS_VREDRAW;
-            GraphClass.lpfnWndProc    = GraphProcedure;
-            GraphClass.hInstance	  = hInst;
-            GraphClass.hIcon		  = LoadIcon (NULL, IDI_APPLICATION);
-            GraphClass.hCursor	      = LoadCursor (NULL, IDC_ARROW);
-            GraphClass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH);
-            GraphClass.lpszMenuName  = NULL;
-            GraphClass.lpszClassName = L"graphics";
-
-
-            if (!RegisterClassW(&GraphClass))
-            {
-                return FALSE;
-            }
 
             gr_open = CreateWindow(L"graphics", L"OPEN", WS_VISIBLE | WS_BORDER | WS_MAXIMIZE | WS_OVERLAPPEDWINDOW, 0, 0, 800, 700, NULL, NULL, hInst, NULL);
 
@@ -236,21 +216,8 @@ LRESULT CALLBACK SoftwareMainProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp
             PostQuitMessage(0);
             break;
         case help:
-            HelpClass.style		  = CS_HREDRAW | CS_VREDRAW;
-            HelpClass.lpfnWndProc    = HELPProc;
-            HelpClass.hInstance	  = hInst;
-            HelpClass.hIcon		  = LoadIcon (NULL, IDI_APPLICATION);
-            HelpClass.hCursor	      = LoadCursor (NULL, IDC_ARROW);
-            HelpClass.hbrBackground = (HBRUSH)COLOR_WINDOW;
-            HelpClass.lpszMenuName  = NULL;
-            HelpClass.lpszClassName = L"help";
 
-            if (!RegisterClassW(&HelpClass))
-            {
-                return -1;
-            }
-
-            help_win = CreateWindow(L"help", L"HELP", WS_VISIBLE | WS_BORDER | WS_MAXIMIZE | WS_HSCROLL | WS_VSCROLL | WS_OVERLAPPEDWINDOW, 0, 0, 800, 700, NULL, NULL, hInst, NULL);
+            help_win = CreateWindow(L"help", L"HELP", WS_VISIBLE | WS_BORDER | WS_MAXIMIZE | WS_HSCROLL | WS_VSCROLL | WS_OVERLAPPEDWINDOW, 0, 0, 800, 700, hWnd, NULL, hInst, NULL);
 
             break;
         default:
@@ -270,13 +237,15 @@ LRESULT CALLBACK SoftwareMainProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp
     }
     break;
     case WM_CREATE:
+    {
         MainWndAddMenus(hWnd);
         MainWndAddWidgets(hWnd);
         SerialUpdate();
         SetOpenFileParams(hWnd);
         readThread = CreateThread(NULL, 0, SerialRead, NULL, 0, NULL);
         CenterWindow(hWnd);
-        break;
+    }
+    break;
     case WM_DESTROY: // close mainwindow
         ExitSoftware();
         break;
