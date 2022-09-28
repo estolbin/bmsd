@@ -101,7 +101,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdsho
     SoftwareMainClass.hIcon		  = NULL;
     SoftwareMainClass.hbrBackground = (HBRUSH) GetStockObject (WHITE_BRUSH);
     SoftwareMainClass.lpszMenuName  = NULL;
-    SoftwareMainClass.lpszClassName = L"graphics";
+    SoftwareMainClass.lpszClassName = L"draw";
     RegisterClass(&SoftwareMainClass);
 
     // Register class for open plot window
@@ -186,7 +186,7 @@ LRESULT CALLBACK SoftwareMainProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp
         {
         case draw_plot:
 
-            gr_draw = CreateWindow(L"graphics", L"DRAW", WS_VISIBLE | WS_BORDER | WS_MAXIMIZE | WS_OVERLAPPEDWINDOW, 0, 0, 800, 700, NULL, NULL, hInst, NULL);
+            gr_draw = CreateWindow(L"draw", L"DRAW", WS_VISIBLE | WS_BORDER | WS_MAXIMIZE | WS_OVERLAPPEDWINDOW, 0, 0, 800, 700, NULL, NULL, hInst, NULL);
 
             break;
         case open_plot:
