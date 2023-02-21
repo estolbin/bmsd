@@ -2,6 +2,7 @@
 #define RESOURCE_H_INCLUDED
 
 #define IDI_ICON2                       101
+#define IDM_BUTTON1                     200
 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS

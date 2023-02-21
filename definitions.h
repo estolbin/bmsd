@@ -77,6 +77,8 @@ double U_min = 10.;
 
 static BOOL bFirstSave = TRUE;
 
+static vector<std::string> g_fileList;
+
 LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
 void czCreateMenu(HWND hWwnd);
 void SaveScreen(HWND hWND);

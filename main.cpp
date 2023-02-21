@@ -1,4 +1,10 @@
+#ifndef UNICODE
 #define UNICODE
+#endif
+
+#ifdef UNICODE
+#define _UNICODE
+#endif
 
 #include <Windows.h>
 #include <string>
@@ -8,6 +14,8 @@
 #include <time.h>
 #include <sstream>
 #include <gdiplus.h>
+#include <vector>
+#include "fileUtil.h"
 using namespace Gdiplus;
 
 using namespace std;
@@ -18,6 +26,8 @@ using namespace std;
 #include "menus_and_widgets.h"
 #include "plots.h"
 #include "help.h"
+
+
 
 unsigned char OWI_COMPUTECRC8(unsigned char inData, unsigned char seed) // CRC computing function
 {
@@ -137,6 +147,7 @@ void ExitSoftware(void)
     CloseHandle(connectedPort);
     CloseHandle(readThread);
     TerminateThread(readThread, 0); //???
+    SaveRecentFilesToRegistry(g_fileList);
     PostQuitMessage(0);
 }
 
@@ -238,6 +249,7 @@ LRESULT CALLBACK SoftwareMainProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp
     break;
     case WM_CREATE:
     {
+        g_f
         MainWndAddMenus(hWnd);
         MainWndAddWidgets(hWnd);
         SerialUpdate();
@@ -254,6 +266,12 @@ LRESULT CALLBACK SoftwareMainProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp
     }
 }
 
+void CreateSubmenu()
+{
+    Button1 = CreateWindowExW(NULL, L"button", L"button 1", WS_VISIBLE | WS_CHILD | WS_TABSTOP, 10, 10, 100, 28, hWnd, (HMENU)IDM_BUTTON1, GetModuleHandle(NULL), NULL);
+    SendMessage(Button1, WM_SETFONT, (WPARAM)hFont, TRUE);
+    SetWindowSubclass(Button1, &ButtonSubclassProc, 0, 0);
+}
 
 void SetWindowStatus(std::string status)
 {
